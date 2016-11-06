@@ -10,4 +10,5 @@ Usage
 ---
 Go `cli-stopwatch` to start a timer.
 Go `cli-stopwatch _<minutes>_` or  `cli-stopwatch _<minutes>_:<seconds>` to start a countdown.
-[usage](cli-stopwatch.giff)
+
+![usage](cli-stopwatch.gif)
