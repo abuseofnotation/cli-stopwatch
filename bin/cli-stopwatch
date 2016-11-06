@@ -1,0 +1,91 @@
+#!/usr/bin/env node
+'use strict'
+
+const moment = require('moment')
+const readline = require('readline')
+
+//const period = process.argv[0]
+
+const isNumber = (str) => parseInt(str).toString() === str
+
+const isHoursMinutes = (str) => {
+  const split = str.split(':')
+  return split.length === 2 && isNumber(split[0]) && isNumber(split[1])
+}
+
+const isValid = (period) => period !== undefined && (isNumber(period) || isHoursMinutes(period))
+const parse = (period) => {
+  const split = period.split(':')
+  return (split.length === 0) ? (date) => date.add(parseInt(period), 'minutes')
+                              : (date) => date.add(parseInt(split[0]), 'minutes')
+                                              .add(parseInt(split[1]), 'seconds')
+}
+
+const displayDuration = (duration) => 
+ duration.hours() + ':' + duration.minutes() + ':' + duration.seconds()
+
+const displayDurationAndProgress = (duration, beginDuration) => 
+  displayDuration(duration) + '  '+ displayProgress(duration, beginDuration)
+
+const times = (times, f, begin) => {
+  for(let i = 0; i <= times; i ++) {
+    begin = f(begin)
+  }
+  return begin
+}
+const size = 30
+const displayProgress = (now, beginning) => {
+  const difference = now.asSeconds()  / beginning.asSeconds() * size
+  return '[' + times(size -difference, (a)=> a + '|', '') + 
+               times(difference, (a) => a + '-', '') +
+          ']'
+}
+
+const countTo = (period) => (start) => {
+  const target = parse(period)(start.clone())
+  const beginDuration = moment.duration(target.diff(start))
+  return display({
+    getMessage(time) {
+      const currentDuration = moment.duration(target.diff(time)) 
+      return displayDurationAndProgress(currentDuration, beginDuration)
+    }, 
+    shouldExit(time) {
+      return target.isBefore(time)
+    }
+  })
+}
+
+const countToInfinity = (start) => display({
+  getMessage(time) {
+    return displayDuration(moment.duration(time.diff(start)))
+  }, 
+  shouldExit(_) {
+    return false 
+  }
+})
+
+
+//-----Impure:
+
+const display = (app) => () => {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  })
+  console.log('')
+  const interval = setInterval(() => {
+    readline.moveCursor(rl, 0, -1)
+    readline.clearLine(rl, 0)
+    rl.write(app.getMessage(moment()) + '\n')
+    //Exit if it is time
+    if(app.shouldExit(moment())) {
+      process.exit(0)
+    }
+  }, 100)
+}
+
+const chooseOption = (period) => 
+  isValid(period) ? countTo(period) : countToInfinity
+
+chooseOption(process.argv[2])(moment())()
+

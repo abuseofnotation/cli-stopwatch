@@ -1,0 +1,30 @@
+{
+  "name": "cli-stopwatch",
+  "version": "1.0.0",
+  "description": "A command-line stopwatch utility",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/boris-marinov/cli-stopwatch.git"
+  },
+  "keywords": [
+    "cli",
+    "terminal",
+    "stopwatch"
+  ],
+  "bin": {
+    "cli-stopwatch": "bin/cli-stopwatch"
+  },
+  "author": "Boris Marinov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/boris-marinov/cli-stopwatch/issues"
+  },
+  "homepage": "https://github.com/boris-marinov/cli-stopwatch#readme",
+  "dependencies": {
+    "moment": "^2.15.2"
+  }
+}
